@@ -134,148 +134,148 @@
 	}
 </script>
 
-<SvelteFlowProvider>
-	{#if !largeScreen}
-		{#if $showControls}
-			<Drawer
-				show={$showControls}
-				onClose={() => {
-					showControls.set(false);
-				}}
-			>
-				<div
-					class=" {$showCallOverlay || $showOverview || $showArtifacts
-						? ' h-screen  w-full'
-						: 'px-6 py-4'} h-full"
-				>
-					{#if $showCallOverlay}
-						<div
-							class=" h-full max-h-[100dvh] bg-white text-gray-700 dark:bg-black dark:text-gray-300 flex justify-center"
-						>
-							<CallOverlay
-								bind:files
-								{submitPrompt}
-								{stopResponse}
-								{modelId}
-								{chatId}
-								{eventTarget}
-								on:close={() => {
-									showControls.set(false);
-								}}
-							/>
-						</div>
-					{:else if $showArtifacts}
-						<Artifacts {history} />
-					{:else if $showOverview}
-						<Overview
-							{history}
-							on:nodeclick={(e) => {
-								showMessage(e.detail.node.data.message);
-							}}
-							on:close={() => {
-								showControls.set(false);
-							}}
-						/>
-					{:else}
-						<Controls
-							on:close={() => {
-								showControls.set(false);
-							}}
-							{models}
-							bind:chatFiles
-							bind:params
-						/>
-					{/if}
-				</div>
-			</Drawer>
-		{/if}
-	{:else}
-		<!-- if $showControls -->
+<!--<SvelteFlowProvider>-->
+<!--	{#if !largeScreen}-->
+<!--		{#if $showControls}-->
+<!--			<Drawer-->
+<!--				show={$showControls}-->
+<!--				onClose={() => {-->
+<!--					showControls.set(false);-->
+<!--				}}-->
+<!--			>-->
+<!--				<div-->
+<!--					class=" {$showCallOverlay || $showOverview || $showArtifacts-->
+<!--						? ' h-screen  w-full'-->
+<!--						: 'px-6 py-4'} h-full"-->
+<!--				>-->
+<!--					{#if $showCallOverlay}-->
+<!--						<div-->
+<!--							class=" h-full max-h-[100dvh] bg-white text-gray-700 dark:bg-black dark:text-gray-300 flex justify-center"-->
+<!--						>-->
+<!--							<CallOverlay-->
+<!--								bind:files-->
+<!--								{submitPrompt}-->
+<!--								{stopResponse}-->
+<!--								{modelId}-->
+<!--								{chatId}-->
+<!--								{eventTarget}-->
+<!--								on:close={() => {-->
+<!--									showControls.set(false);-->
+<!--								}}-->
+<!--							/>-->
+<!--						</div>-->
+<!--					{:else if $showArtifacts}-->
+<!--&lt;!&ndash;						<Artifacts {history} />&ndash;&gt;-->
+<!--					{:else if $showOverview}-->
+<!--						<Overview-->
+<!--							{history}-->
+<!--							on:nodeclick={(e) => {-->
+<!--								showMessage(e.detail.node.data.message);-->
+<!--							}}-->
+<!--							on:close={() => {-->
+<!--								showControls.set(false);-->
+<!--							}}-->
+<!--						/>-->
+<!--					{:else}-->
+<!--						<Controls-->
+<!--							on:close={() => {-->
+<!--								showControls.set(false);-->
+<!--							}}-->
+<!--							{models}-->
+<!--							bind:chatFiles-->
+<!--							bind:params-->
+<!--						/>-->
+<!--					{/if}-->
+<!--				</div>-->
+<!--			</Drawer>-->
+<!--		{/if}-->
+<!--	{:else}-->
+<!--		&lt;!&ndash; if $showControls &ndash;&gt;-->
 
-		{#if $showControls}
-			<PaneResizer class="relative flex w-2 items-center justify-center bg-background group">
-				<div class="z-10 flex h-7 w-5 items-center justify-center rounded-xs">
-					<EllipsisVertical className="size-4 invisible group-hover:visible" />
-				</div>
-			</PaneResizer>
-		{/if}
+<!--		{#if $showControls}-->
+<!--			<PaneResizer class="relative flex w-2 items-center justify-center bg-background group">-->
+<!--				<div class="z-10 flex h-7 w-5 items-center justify-center rounded-xs">-->
+<!--					<EllipsisVertical className="size-4 invisible group-hover:visible" />-->
+<!--				</div>-->
+<!--			</PaneResizer>-->
+<!--		{/if}-->
 
-		<Pane
-			bind:pane
-			defaultSize={0}
-			onResize={(size) => {
-				console.log('size', size, minSize);
+<!--		<Pane-->
+<!--			bind:pane-->
+<!--			defaultSize={0}-->
+<!--			onResize={(size) => {-->
+<!--				console.log('size', size, minSize);-->
 
-				if ($showControls && pane.isExpanded()) {
-					if (size < minSize) {
-						pane.resize(minSize);
-					}
+<!--				if ($showControls && pane.isExpanded()) {-->
+<!--					if (size < minSize) {-->
+<!--						pane.resize(minSize);-->
+<!--					}-->
 
-					if (size < minSize) {
-						localStorage.chatControlsSize = 0;
-					} else {
-						localStorage.chatControlsSize = size;
-					}
-				}
-			}}
-			onCollapse={() => {
-				showControls.set(false);
-			}}
-			collapsible={true}
-			class=" z-10 "
-		>
-			{#if $showControls}
-				<div class="flex max-h-full min-h-full">
-					<div
-						class="w-full {($showOverview || $showArtifacts) && !$showCallOverlay
-							? ' '
-							: 'px-4 py-4 bg-white dark:shadow-lg dark:bg-gray-850  border border-gray-100 dark:border-gray-850'} z-40 pointer-events-auto overflow-y-auto scrollbar-hidden"
-					>
-						{#if $showCallOverlay}
-							<div class="w-full h-full flex justify-center">
-								<CallOverlay
-									bind:files
-									{submitPrompt}
-									{stopResponse}
-									{modelId}
-									{chatId}
-									{eventTarget}
-									on:close={() => {
-										showControls.set(false);
-									}}
-								/>
-							</div>
-						{:else if $showArtifacts}
-							<Artifacts {history} overlay={dragged} />
-						{:else if $showOverview}
-							<Overview
-								{history}
-								on:nodeclick={(e) => {
-									if (e.detail.node.data.message.favorite) {
-										history.messages[e.detail.node.data.message.id].favorite = true;
-									} else {
-										history.messages[e.detail.node.data.message.id].favorite = null;
-									}
+<!--					if (size < minSize) {-->
+<!--						localStorage.chatControlsSize = 0;-->
+<!--					} else {-->
+<!--						localStorage.chatControlsSize = size;-->
+<!--					}-->
+<!--				}-->
+<!--			}}-->
+<!--			onCollapse={() => {-->
+<!--				showControls.set(false);-->
+<!--			}}-->
+<!--			collapsible={true}-->
+<!--			class=" z-10 "-->
+<!--		>-->
+<!--			{#if $showControls}-->
+<!--				<div class="flex max-h-full min-h-full">-->
+<!--					<div-->
+<!--						class="w-full {($showOverview || $showArtifacts) && !$showCallOverlay-->
+<!--							? ' '-->
+<!--							: 'px-4 py-4 bg-white dark:shadow-lg dark:bg-gray-850  border border-gray-100 dark:border-gray-850'} z-40 pointer-events-auto overflow-y-auto scrollbar-hidden"-->
+<!--					>-->
+<!--						{#if !$showCallOverlay}-->
+<!--							<div class="w-full h-full flex justify-center">-->
+<!--								<CallOverlay-->
+<!--									bind:files-->
+<!--									{submitPrompt}-->
+<!--									{stopResponse}-->
+<!--									{modelId}-->
+<!--									{chatId}-->
+<!--									{eventTarget}-->
+<!--									on:close={() => {-->
+<!--										showControls.set(false);-->
+<!--									}}-->
+<!--								/>-->
+<!--							</div>-->
+<!--						&lt;!&ndash;{:else if $showArtifacts}&ndash;&gt;-->
+<!--&lt;!&ndash;							<Artifacts {history} overlay={dragged} />&ndash;&gt;-->
+<!--						{:else if $showOverview}-->
+<!--							<Overview-->
+<!--								{history}-->
+<!--								on:nodeclick={(e) => {-->
+<!--									if (e.detail.node.data.message.favorite) {-->
+<!--										history.messages[e.detail.node.data.message.id].favorite = true;-->
+<!--									} else {-->
+<!--										history.messages[e.detail.node.data.message.id].favorite = null;-->
+<!--									}-->
 
-									showMessage(e.detail.node.data.message);
-								}}
-								on:close={() => {
-									showControls.set(false);
-								}}
-							/>
-						{:else}
-							<Controls
-								on:close={() => {
-									showControls.set(false);
-								}}
-								{models}
-								bind:chatFiles
-								bind:params
-							/>
-						{/if}
-					</div>
-				</div>
-			{/if}
-		</Pane>
-	{/if}
-</SvelteFlowProvider>
+<!--									showMessage(e.detail.node.data.message);-->
+<!--								}}-->
+<!--								on:close={() => {-->
+<!--									showControls.set(false);-->
+<!--								}}-->
+<!--							/>-->
+<!--						{:else}-->
+<!--							<Controls-->
+<!--								on:close={() => {-->
+<!--									showControls.set(false);-->
+<!--								}}-->
+<!--								{models}-->
+<!--								bind:chatFiles-->
+<!--								bind:params-->
+<!--							/>-->
+<!--						{/if}-->
+<!--					</div>-->
+<!--				</div>-->
+<!--			{/if}-->
+<!--		</Pane>-->
+<!--	{/if}-->
+<!--</SvelteFlowProvider>-->

@@ -14,6 +14,7 @@
 	} from '$lib/stores';
 	import FloatingButtons from '../ContentRenderer/FloatingButtons.svelte';
 	import { createMessagesList } from '$lib/utils';
+	import Artifacts from '../../chat/Artifacts.svelte';
 
 	export let id;
 	export let content;
@@ -131,6 +132,9 @@
 </script>
 
 <div bind:this={contentContainerElement}>
+	{#if $showArtifacts}
+	<Artifacts history={history} />
+		{:else}
 	<Markdown
 		{id}
 		{content}
@@ -193,6 +197,7 @@
 			await showOverview.set(false);
 		}}
 	/>
+		{/if}
 </div>
 
 {#if floatingButtons && model}

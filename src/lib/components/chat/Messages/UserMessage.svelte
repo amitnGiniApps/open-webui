@@ -3,7 +3,7 @@
 	import { toast } from 'svelte-sonner';
 	import { tick, getContext, onMount } from 'svelte';
 
-	import { models, settings } from '$lib/stores';
+	import { models, settings, prompts } from '$lib/stores';
 	import { user as _user } from '$lib/stores';
 	import { copyToClipboard as _copyToClipboard, formatDate } from '$lib/utils';
 	import { WEBUI_BASE_URL } from '$lib/constants';
@@ -319,7 +319,13 @@
 									: ' w-full'}"
 							>
 								{#if message.content}
-									<Markdown id={`${chatId}-${message.id}`} content={message.content} {topPadding} />
+									<Markdown
+										id={`${chatId}-${message.id}`}
+										content={
+   										$prompts?.find(prompt => prompt.content === message.content)?.command ?? message.content
+											}
+										{topPadding}
+									/>
 								{/if}
 							</div>
 						</div>

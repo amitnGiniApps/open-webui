@@ -20,6 +20,7 @@
 		config,
 		type Model,
 		models,
+		prompts,
 		tags as allTags,
 		settings,
 		showSidebar,
@@ -1229,6 +1230,7 @@
 	const chatCompletionEventHandler = async (data, message, chatId) => {
 		const { id, done, choices, content, sources, selected_model_id, error, usage } = data;
 
+
 		if (error) {
 			await handleOpenAIError(error, message);
 		}
@@ -1385,6 +1387,12 @@
 
 	const submitPrompt = async (userPrompt, { _raw = false } = {}) => {
 		console.log('submitPrompt', userPrompt, $chatId);
+
+		const activePrompt = $prompts?.find(prompt => userPrompt.includes(prompt.command))
+
+		if(activePrompt) {
+			userPrompt = activePrompt.content
+		}
 
 		const messages = createMessagesList(history, history.currentId);
 		const _selectedModels = selectedModels.map((modelId) =>

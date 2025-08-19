@@ -9,6 +9,7 @@ import sys
 import time
 import random
 from uuid import uuid4
+from open_webui.utils.plugin import load_tool_module_by_id
 
 
 from contextlib import asynccontextmanager
@@ -1481,6 +1482,25 @@ async def chat_completion(
                     "model": model_id,
                 },
             )
+
+        if not isinstance(response, StreamingResponse):
+            if response["model"] == "demo-model":
+                tool_module, frontmatter = load_tool_module_by_id('projects_to_html')
+
+                # tool_module, frontmatter = load_tool_module_by_id('requests')
+                content_str = response['choices'][0]['message']['content']
+
+                try:
+                    content_data = json.loads(content_str)  # now it's a dict
+                except json.JSONDecodeError:
+                    # If it's not JSON, fallback to empty dict
+                    content_data = {}
+
+                convertedHtml = await tool_module.convert_to_html(
+                    projects_data=content_data["projects"]
+                )
+
+                response['choices'][0]['message']['content'] = convertedHtml
 
         return await process_chat_response(
             request, response, form_data, user, metadata, model, events, tasks

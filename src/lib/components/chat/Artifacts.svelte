@@ -50,6 +50,7 @@
 				let htmlContent = '';
 				let cssContent = '';
 				let jsContent = '';
+				let iframeSrc = '';
 
 				codeBlocks.forEach((block) => {
 					const { lang, code } = block;
@@ -66,6 +67,7 @@
 				const inlineHtml = message.content.match(/<html>[\s\S]*?<\/html>/gi);
 				const inlineCss = message.content.match(/<style>[\s\S]*?<\/style>/gi);
 				const inlineJs = message.content.match(/<script>[\s\S]*?<\/script>/gi);
+				const inlineIframe = message.content.match(/<iframe[^>]*src=["']([^"']+)["'][^>]*>/i);
 
 				if (inlineHtml) {
 					inlineHtml.forEach((block) => {
@@ -85,13 +87,20 @@
 						jsContent += content + '\n';
 					});
 				}
+				if (inlineIframe) {
+					console.log({ inlineIframe });
+					iframeSrc = inlineIframe[1]; // captured src value
+				}
 
-				if (htmlContent || cssContent || jsContent) {
+				if (iframeSrc) {
+					contents = [...contents, { type: 'iframeSrc', content: iframeSrc }];
+				} else if  (htmlContent || cssContent || jsContent) {
 					const renderedContent = `
                         <!DOCTYPE html>
                         <html lang="en">
                         <head>
                             <meta charset="UTF-8">
+                            <${''}script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"><${''}/script>
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
 							<${''}style>
 								body {
@@ -197,8 +206,8 @@
 	onMount(() => {
 		artifactCode.subscribe((value) => {
 			if (contents) {
-				const codeIdx = contents.findIndex((content) => content.content.includes(value));
-				selectedContentIdx = codeIdx !== -1 ? codeIdx : 0;
+					const codeIdx = contents.findIndex((content) => content.content.includes(value));
+					selectedContentIdx = codeIdx !== -1 ? codeIdx : 0;
 			}
 		});
 	});
@@ -295,7 +304,7 @@
 							</button>
 						</Tooltip>
 
-						{#if contents[selectedContentIdx].type === 'iframe'}
+						{#if contents[selectedContentIdx].type === 'iframe' || contents[selectedContentIdx].type === 'iframeSrc'}
 							<Tooltip content={$i18n.t('Open in full screen')}>
 								<button
 									class=" bg-none border-none text-xs bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-md p-0.5"
@@ -329,11 +338,13 @@
 			<div class=" h-full flex flex-col">
 				{#if contents.length > 0}
 					<div class="max-w-full w-full h-full">
-						{#if contents[selectedContentIdx].type === 'iframe'}
+						{#if contents[selectedContentIdx].type === 'iframe' || contents[selectedContentIdx].type === 'iframeSrc'}
 							<iframe
 								bind:this={iframeElement}
+								id="child"
 								title="Content"
-								srcdoc={contents[selectedContentIdx].content}
+								src={contents[selectedContentIdx].type ==='iframeSrc' ? '/remote/' : null}
+								srcdoc={contents[selectedContentIdx].type ==='iframe' ? contents[selectedContentIdx].content : null}
 								class="w-full border-0 h-full rounded-none"
 								sandbox="allow-scripts allow-downloads{($settings?.iframeSandboxAllowForms ?? false)
 									? ' allow-forms'
