@@ -78,7 +78,48 @@ export const getTools = async (token: string = '') => {
 	})
 		.then(async (res) => {
 			if (!res.ok) throw await res.json();
-			return res.json();
+			const theTools = await res.json();
+			console.log(theTools);
+			return [...theTools, {
+				"id": "calculator_tool",
+				"name": "Calculator",
+				"meta": {
+					"description": "Performs basic arithmetic operations (+, -, *, /)",
+					"manifest": {
+						"input": {
+							"type": "object",
+							"properties": {
+								"expression": {
+									"type": "string",
+									"description": "A mathematical expression to evaluate, e.g. '2 + 2 * 3'"
+								}
+							},
+							"required": ["expression"]
+						},
+						"output": {
+							"type": "object",
+							"properties": {
+								"result": {
+									"type": "number",
+									"description": "The evaluated result of the expression"
+								}
+							}
+						}
+					}
+				},
+				"access_control": {},
+				"created_at": 1755763000,
+				"updated_at": 1755763000,
+				"user_id": "9c7ccbb2-014e-4796-8926-d4725191f97c",
+				"user": {
+					"id": "9c7ccbb2-014e-4796-8926-d4725191f97c",
+					"name": "amit",
+					"email": "amitn@gini-apps.com",
+					"role": "admin",
+					"profile_image_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQA…"
+				}
+			}
+			]
 		})
 		.then((json) => {
 			return json;

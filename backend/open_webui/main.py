@@ -1376,6 +1376,9 @@ async def chat_completion(
     if not request.app.state.MODELS:
         await get_all_models(request, user=user)
 
+    # body_bytes = await request.body()
+    # body_str = body_bytes.decode("utf-8")  # convert bytes to string
+    # print({"received": body_str})
     model_item = form_data.pop("model_item", {})
     tasks = form_data.pop("background_tasks", None)
 
@@ -1495,12 +1498,12 @@ async def chat_completion(
                 except json.JSONDecodeError:
                     # If it's not JSON, fallback to empty dict
                     content_data = {}
+                    if projects in content_data:
+                        convertedHtml = await tool_module.convert_to_html(
+                            projects_data=content_data["projects"]
+                        )
 
-                convertedHtml = await tool_module.convert_to_html(
-                    projects_data=content_data["projects"]
-                )
-
-                response['choices'][0]['message']['content'] = convertedHtml
+                        response['choices'][0]['message']['content'] = convertedHtml
 
         return await process_chat_response(
             request, response, form_data, user, metadata, model, events, tasks

@@ -731,7 +731,7 @@ async def generate_chat_completion(
         bypass_filter = True
 
     idx = 0
-
+    # print(form_data)
     payload = {**form_data}
     metadata = payload.pop("metadata", None)
 
@@ -863,7 +863,13 @@ async def generate_chat_completion(
         request_url = f"{url}/chat/completions"
         headers["Authorization"] = f"Bearer {key}"
 
+    data = {**form_data}
+    tool_ids = data.get("metadata", {}).get("tool_ids")
+    if tool_ids:
+        payload["tools"] = tool_ids
+
     payload = json.dumps(payload)
+    print(payload)
 
     r = None
     session = None
