@@ -1,32 +1,42 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { federation } from '@module-federation/vite';
 
 export default defineConfig({
 	plugins: [
 		sveltekit(),
+		federation({
+			name: 'igz4-host',
+			remotes: {
+				mlrun: {
+					type: 'module',
+					name: 'mlrun',
+					entry: 'http://localhost:4173/remoteEntry.js', // React remote
+				},
+			},
+			shared: {},
+		}),
 		viteStaticCopy({
 			targets: [
 				{
 					src: 'node_modules/onnxruntime-web/dist/*.jsep.*',
-
-					dest: 'wasm'
-				}
-			]
-		})
+					dest: 'wasm',
+				},
+			],
+		}),
 	],
 	define: {
 		APP_VERSION: JSON.stringify(process.env.npm_package_version),
-		APP_BUILD_HASH: JSON.stringify(process.env.APP_BUILD_HASH || 'dev-build')
+		APP_BUILD_HASH: JSON.stringify(process.env.APP_BUILD_HASH || 'dev-build'),
 	},
 	build: {
-		sourcemap: true
+		sourcemap: true,
 	},
 	worker: {
-		format: 'es'
+		format: 'es',
 	},
 	esbuild: {
-		pure: process.env.ENV === 'dev' ? [] : ['console.log', 'console.debug']
-	}
+		pure: process.env.ENV === 'dev' ? [] : ['console.log', 'console.debug'],
+	},
 });
