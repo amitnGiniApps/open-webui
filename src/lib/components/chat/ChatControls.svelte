@@ -4,7 +4,7 @@
 	import { Pane, PaneResizer } from 'paneforge';
 
 	import { onDestroy, onMount, tick } from 'svelte';
-	import { mobile, showControls, showCallOverlay, showOverview, showArtifacts } from '$lib/stores';
+	import { mobile, showControls, showCallOverlay, showOverview, showArtifacts, showMlrun } from '$lib/stores';
 
 	import Modal from '../common/Modal.svelte';
 	import Controls from './Controls/Controls.svelte';
@@ -13,6 +13,7 @@
 	import Overview from './Overview.svelte';
 	import EllipsisVertical from '../icons/EllipsisVertical.svelte';
 	import Artifacts from './Artifacts.svelte';
+	import RemoteTest from '$lib/components/chat/RemoteTest.svelte';
 
 	export let history;
 	export let models = [];
@@ -44,6 +45,8 @@
 			pane.resize(minSize);
 		}
 	};
+
+	console.log($showArtifacts);
 
 	const handleMediaQuery = async (e) => {
 		if (e.matches) {
@@ -164,6 +167,8 @@
 								}}
 							/>
 						</div>
+					{:else if $showMlrun}
+						<RemoteTest />
 					{:else if $showArtifacts}
 						<Artifacts {history} />
 					{:else if $showOverview}
@@ -249,6 +254,8 @@
 									}}
 								/>
 							</div>
+						{:else if $showMlrun}
+								<RemoteTest />
 						{:else if $showArtifacts}
 							<Artifacts {history} overlay={dragged} />
 						{:else if $showOverview}

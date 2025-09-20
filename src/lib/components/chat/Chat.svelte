@@ -89,7 +89,6 @@
 	import Tooltip from '../common/Tooltip.svelte';
 	import Sidebar from '../icons/Sidebar.svelte';
 	import { uploadFile } from '$lib/apis/files';
-	import RemoteTest from '$lib/components/chat/RemoteTest.svelte';
 
 	export let chatIdProp = '';
 
@@ -524,7 +523,7 @@
 			if (!value) {
 				showCallOverlay.set(false);
 				showOverview.set(false);
-				showArtifacts.set(false);
+				// showArtifacts.set(false);
 			}
 		});
 
@@ -814,7 +813,7 @@
 		await showControls.set(false);
 		await showCallOverlay.set(false);
 		await showOverview.set(false);
-		await showArtifacts.set(false);
+		// await showArtifacts.set(false);
 
 		if ($page.url.pathname.includes('/c/')) {
 			window.history.replaceState(history.state, '', `/`);
@@ -2184,7 +2183,6 @@
 	id="chat-container"
 >
 	{#if !loading}
-		<RemoteTest />
 		<div in:fade={{ duration: 50 }} class="w-full h-full flex flex-col">
 			{#if $settings?.backgroundImageUrl ?? $config?.license_metadata?.background_image_url ?? null}
 				<div

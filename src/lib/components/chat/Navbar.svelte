@@ -13,7 +13,8 @@
 		showControls,
 		showSidebar,
 		temporaryChatEnabled,
-		user
+		user,
+		showMlrun
 	} from '$lib/stores';
 
 	import { slide } from 'svelte/transition';
@@ -109,6 +110,18 @@
 
 				<div class="self-start flex flex-none items-center text-gray-600 dark:text-gray-400">
 					<!-- <div class="md:hidden flex self-center w-[1px] h-5 mx-2 bg-gray-300 dark:bg-stone-700" /> -->
+					<Tooltip content={$i18n.t(`MLRun`)}>
+					<button
+						class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+						on:click={async () => {
+							console.log('wow')
+							await showControls.set(true)
+							await showMlrun.set(true);
+						}}
+					>
+						<img src="../../../../static/static/apple-icon-180x180.png" class="w-4 h-4" alt="MLrun">
+					</button>
+					</Tooltip>
 
 					{#if $user?.role === 'user' ? ($user?.permissions?.chat?.temporary ?? true) && !($user?.permissions?.chat?.temporary_enforced ?? false) : true}
 						{#if !chat?.id}
